@@ -1,0 +1,79 @@
+/*
+ * Copyright 2014-2022 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Modified by Ji Sungbin.
+ */
+
+package land.sungbin.ktor.client.plugins.logging
+
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.charset
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.charsets.Charset
+import io.ktor.utils.io.charsets.Charsets
+import io.ktor.utils.io.core.readText
+
+internal fun Appendable.logHeaders(
+  headers: Set<Map.Entry<String, List<String>>>,
+  sanitizedHeaders: List<SanitizedHeader>,
+) {
+  val sortedHeaders = headers.toList().sortedBy { it.key }
+
+  sortedHeaders.forEach { (key, values) ->
+    val placeholder = sanitizedHeaders.firstOrNull { it.predicate(key) }?.placeholder
+    logHeader(key, placeholder ?: values.joinToString("; "))
+  }
+}
+
+internal fun Appendable.logHeader(key: String, value: String) {
+  appendLine("-> $key: $value")
+}
+
+internal fun logResponseHeader(
+  log: StringBuilder,
+  response: HttpResponse,
+  level: LogLevel,
+  sanitizedHeaders: List<SanitizedHeader>,
+) {
+  with(log) {
+    if (level.info) {
+      appendLine("RESPONSE: ${response.status}")
+      appendLine("METHOD: ${response.call.request.method}")
+      appendLine("FROM: ${response.call.request.url}")
+    }
+
+    if (level.headers) {
+      appendLine("COMMON HEADERS")
+      logHeaders(response.headers.entries(), sanitizedHeaders)
+    }
+  }
+}
+
+internal suspend inline fun ByteReadChannel.tryReadText(charset: Charset): String? =
+  try {
+    readRemaining().readText(charset = charset)
+  } catch (cause: Throwable) {
+    null
+  }
+
+internal suspend fun logResponseBody(
+  log: StringBuilder,
+  contentType: ContentType?,
+  content: ByteReadChannel,
+  logger: Logger,
+) {
+  with(log) {
+    appendLine("BODY Content-Type: $contentType")
+    appendLine("BODY START")
+
+    val message = content.tryReadText(contentType?.charset() ?: Charsets.UTF_8)
+      // ?.toPrettyJsonIfNeeded(contentType, logger)
+      ?: "[response body omitted]"
+    appendLine(message)
+
+    append("BODY END")
+  }
+}
+
+internal fun String.toPrettyJsonIfNeeded(contentType: ContentType?, logger: Logger) =
+  if (contentType == ContentType.Application.Json) logger.prettifyJson(this) else this
