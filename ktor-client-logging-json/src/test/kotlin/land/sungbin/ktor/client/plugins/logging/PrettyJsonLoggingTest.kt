@@ -2,6 +2,7 @@ package land.sungbin.ktor.client.plugins.logging
 
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
+import io.kotest.matchers.collections.shouldContainExactly
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -17,6 +18,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 import okio.Buffer
+import io.ktor.client.plugins.logging.Logger as StdLogger
+import io.ktor.client.plugins.logging.Logging as StdLogging
 
 class PrettyJsonLoggingTest {
   private val anyAdapter = Moshi.Builder().build().adapter(Any::class.java).indent("  ")
@@ -39,8 +42,9 @@ class PrettyJsonLoggingTest {
   }
 
   @Test
-  fun json_content_pretty_test() = runTest {
+  fun equal_stdlogging_logging() = runTest {
     val messages = mutableListOf<String>()
+    val stdMessages = mutableListOf<String>()
     val engine = MockEngine { _ ->
       respond(
         content = testJson,
@@ -54,11 +58,43 @@ class PrettyJsonLoggingTest {
           override fun log(message: String) {
             messages += message
           }
+        }
+      }
+      install(StdLogging) {
+        logger = object : StdLogger {
+          override fun log(message: String) {
+            stdMessages += message
+          }
+        }
+      }
+    }
 
-          override fun prettifyJson(json: String): String {
+    client.get("/")
+
+    messages shouldContainExactly stdMessages
+  }
+
+  @Test
+  fun json_content_pretty_test() = runTest {
+    val messages = mutableListOf<String>()
+    val engine = MockEngine { _ ->
+      respond(
+        content = testJson,
+        status = HttpStatusCode.OK,
+        headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+      )
+    }
+    val client = HttpClient(engine) {
+      install(io.ktor.client.plugins.logging.Logging) {
+        logger = object : /*Logger, */io.ktor.client.plugins.logging.Logger {
+          override fun log(message: String) {
+            messages += message
+          }
+
+          /*override fun prettifyJson(json: String): String {
             val value = JsonReader.of(Buffer().writeUtf8(json)).readJsonValue()
             return anyAdapter.toJson(value)
-          }
+          }*/
         }
       }
     }
