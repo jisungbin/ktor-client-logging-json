@@ -6,9 +6,9 @@
 package land.sungbin.ktor.client.plugins.logging
 
 /**
- * [Logging] log level.
+ * [JsonAwareLogging] log level.
  */
-public enum class LogLevel(
+public enum class JsonAwareLogLevel(
   public val info: Boolean,
   public val headers: Boolean,
   public val body: Boolean,

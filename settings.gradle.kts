@@ -15,4 +15,9 @@ buildCache {
   }
 }
 
-include(":ktor-client-logging-json")
+include(
+  ":ktor-client-logging-json",
+  ":ktor-client-logger-gson",
+  ":ktor-client-logger-moshi",
+  ":ktor-client-logger-jackson",
+)

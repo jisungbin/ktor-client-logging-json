@@ -28,13 +28,13 @@ internal suspend fun OutgoingContent.observe(log: ByteWriteChannel): OutgoingCon
       val responseChannel = ByteChannel()
       val content = readFrom()
       content.copyToBoth(log, responseChannel)
-      LoggedContent(this, responseChannel)
+      JsonAwareLoggedContent(this, responseChannel)
     }
     is OutgoingContent.WriteChannelContent -> {
       val responseChannel = ByteChannel()
       val content = toReadChannel()
       content.copyToBoth(log, responseChannel)
-      LoggedContent(this, responseChannel)
+      JsonAwareLoggedContent(this, responseChannel)
     }
     else -> {
       log.close()

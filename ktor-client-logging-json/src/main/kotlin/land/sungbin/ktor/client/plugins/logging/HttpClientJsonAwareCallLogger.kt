@@ -8,7 +8,7 @@ package land.sungbin.ktor.client.plugins.logging
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.Job
 
-internal class HttpClientCallLogger(private val logger: Logger) {
+internal class HttpClientJsonAwareCallLogger(private val logger: JsonAwareLogger) {
   private val requestLog = StringBuilder()
   private val responseLog = StringBuilder()
   private val requestLoggedMonitor = Job()

@@ -12,7 +12,7 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 
-internal class LoggedContent(
+internal class JsonAwareLoggedContent(
   private val originalContent: OutgoingContent,
   private val channel: ByteReadChannel,
 ) : OutgoingContent.ReadChannelContent() {

@@ -7,6 +7,8 @@ package land.sungbin.ktor.client.plugins.logging
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.ContentType.Application.HalJson
+import io.ktor.http.ContentType.Application.Json
 import io.ktor.http.charset
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.charsets.Charset
@@ -32,7 +34,7 @@ internal fun Appendable.logHeader(key: String, value: String) {
 internal fun logResponseHeader(
   log: StringBuilder,
   response: HttpResponse,
-  level: LogLevel,
+  level: JsonAwareLogLevel,
   sanitizedHeaders: List<SanitizedHeader>,
 ) {
   with(log) {
@@ -60,14 +62,14 @@ internal suspend fun logResponseBody(
   log: StringBuilder,
   contentType: ContentType?,
   content: ByteReadChannel,
-  logger: Logger,
+  logger: JsonAwareLogger,
 ) {
   with(log) {
     appendLine("BODY Content-Type: $contentType")
     appendLine("BODY START")
 
     val message = content.tryReadText(contentType?.charset() ?: Charsets.UTF_8)
-      // ?.toPrettyJsonIfNeeded(contentType, logger)
+      ?.prettifyJsonIfNeeded(contentType, logger)
       ?: "[response body omitted]"
     appendLine(message)
 
@@ -75,5 +77,5 @@ internal suspend fun logResponseBody(
   }
 }
 
-internal fun String.toPrettyJsonIfNeeded(contentType: ContentType?, logger: Logger) =
-  if (contentType == ContentType.Application.Json) logger.prettifyJson(this) else this
+internal fun String.prettifyJsonIfNeeded(contentType: ContentType?, logger: JsonAwareLogger) =
+  if (contentType == Json || contentType == HalJson) logger.prettifyJson(this) else this
