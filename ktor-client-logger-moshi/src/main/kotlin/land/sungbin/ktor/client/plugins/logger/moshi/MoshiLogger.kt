@@ -15,6 +15,7 @@ private val DEFAULT_ADAPTER =
     .serializeNulls()
     .lenient()
 
+/** Use Moshi as a json beautifier. */
 public fun JsonAwareLogger.useMoshi(adapter: JsonAdapter<Any> = DEFAULT_ADAPTER): JsonAwareLogger =
   copy(
     prettifyJson = { json ->
