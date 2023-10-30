@@ -9,6 +9,7 @@ import land.sungbin.ktor.client.plugins.logging.copy
 private val DEFAULT_GSON =
   GsonBuilder().setPrettyPrinting().serializeNulls().setLenient().create()
 
+/** Use Gson as a json beautifier. */
 public fun JsonAwareLogger.useGson(gson: Gson = DEFAULT_GSON): JsonAwareLogger =
   copy(
     prettifyJson = { json ->

@@ -14,6 +14,7 @@ private val DEFAULT_MAPPER =
     .enable(SerializationFeature.INDENT_OUTPUT)
     .setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS)
 
+/** Use Jackson as a json beautifier. */
 public fun JsonAwareLogger.useJackson(mapper: ObjectMapper = DEFAULT_MAPPER): JsonAwareLogger =
   copy(
     prettifyJson = { json ->
