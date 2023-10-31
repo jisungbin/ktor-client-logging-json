@@ -2,7 +2,9 @@
 
 If content-type is `json` or `hal+json`, it will automatically output the beautified json.
 
-// TODO: picture.
+| Before | After |
+| :---: | :---: |
+| ![image](https://github.com/jisungbin/ktor-client-logging-json/assets/40740128/2db5de96-5fd8-4c28-9da9-aad0545af335) | ![image](https://github.com/jisungbin/ktor-client-logging-json/assets/40740128/5205b000-5edd-4197-bd43-35bba1414094) |
 
 ### Usage
 
