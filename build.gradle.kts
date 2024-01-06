@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("com.vanniktech.maven.publish") version "0.25.3" apply false
+  id("com.vanniktech.maven.publish") version "0.27.0" apply false
 }
 
 buildscript {
