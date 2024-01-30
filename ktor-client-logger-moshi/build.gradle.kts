@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
   api(project(":ktor-client-logging-json"))
-  api("com.squareup.moshi:moshi:1.15.0")
+  api("com.squareup.moshi:moshi:1.15.1")
 
   testImplementation("io.ktor:ktor-client-core:2.3.5")
   testImplementation("io.ktor:ktor-client-mock:2.3.5")
