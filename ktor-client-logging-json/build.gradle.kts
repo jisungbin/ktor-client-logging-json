@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  implementation("io.ktor:ktor-client-core:2.3.5")
+  implementation("io.ktor:ktor-client-core:2.3.9")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
   testImplementation("io.ktor:ktor-client-mock:2.3.5")
